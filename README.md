@@ -1,22 +1,31 @@
-This plugin template uses Typescript. If you are familiar with Javascript, Typescript will
-look very familiar. In fact, valid Javascript code is already valid Typescript code.
+# Timer
 
-Typescript adds type annotations to variables. This allows code editors such as Visual Studio Code
-to provide information about the Figma API while you are writing code, as well as help catch bugs
-you previously didn't notice.
+TODO: insert banner image
 
-For more information, visit https://www.typescriptlang.org/
+## Installation  
 
-Using Typescript requires a compiler to convert Typescript (code.ts) into Javascript (code.js)
-for the browser to run.
+TODO: insert Link to published plugin
 
-To get the TypeScript compiler working:
+## Usage
 
-1. Download Visual Studio Code if you haven't already: https://code.visualstudio.com/.
-2. Install the TypeScript compiler globally: `sudo npm install -g typescript`.
-3. Open this directory in Visual Studio Code.
-4. Compile TypeScript to JavaScript: Run the "Terminal > Run Build Task..." menu item,
-    then select "tsc: watch - tsconfig.json". You will have to do this again every time
-    you reopen Visual Studio Code.
+There are two ways to start a timer:
+1. Type the time you want to count down in *Timer: HH:MM:SS* format (e.g. Timer: 5:00), then select Plugins > Timer to start the countdown.
+2. Type the time you want to count down in *HH:MM:SS* format (e.g. 5:00). In this case you need to select the text layer before going to Plusings > Timer to start the countdown.
 
-That's it! Visual Studio Code will regenerate the JavaScript file every time you save.
+Additionally, you can now  start a couple of timers on a page (for whatever reason)! To  do that, selectall text layers that  contain the timer, then select Plugins > Timer to shart the countdown.
+
+## Development
+
+1. This plugin uses Typescript & Visual Studio Code (https://code.visualstudio.com/).
+To install typescript execute:
+
+```
+$ sudo npm install -g typescript
+```
+
+2. Open the directory in Visual Studio Code and perform your changes in the code.ts file
+3. Run the "Terminal > Run Build Task..." menu item, then select "tsc: watch - tsconfig.json", to compile the JavaScript source.
+
+___
+
+Created by [Viktoriia Leontieva](https://twitter.com/killnicole), [https://twitter.com/berndplontsch](https://twitter.com/killnicole) & [Leonard Thomas](https://twitter.com/_leotho)
