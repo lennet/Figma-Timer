@@ -1,12 +1,13 @@
 # Timer
 
-TODO: insert banner image
+
 
 ## Installation  
 
-TODO: insert Link to published plugin
+https://www.figma.com/community/plugin/820311256083321341
 
 ## Usage
+Use text to create a timer on a Figma page.
 
 There are two ways to start a timer:
 1. Type the time you want to count down in **Timer: HH:MM:SS** format (e.g. Timer: 5:00), then select Plugins > Timer to start the countdown.
