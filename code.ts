@@ -11,12 +11,8 @@ if (checkForSelectedNodes() == false) {
 function checkForSelectedNodes() {
   const regex = new RegExp("[0-9]{1,2}(:[0-9]{1,2})*");
   const selectedNodes =  figma.currentPage.selection.filter(node => node.type == "TEXT" && regex.test(node.characters));
-
-  if (selectedNodes.length > 0) {
-      selectedNodes.forEach(start);
-      return true;
-  }
-  return false;
+  selectedNodes.forEach(start);
+  return selectedNodes.length > 0;
 }
 
 function checkForNodesThatBeginWithTimer() {
