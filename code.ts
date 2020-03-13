@@ -4,7 +4,7 @@ const secondsSet = [86400, 3600, 60, 1];
 
 if (checkForSelectedNodes() == false) {
   if (checkForNodesThatBeginWithTimer() == false) {
-    throw new Error("No Timer found");
+    throw new Error("Type the time to start Timer");
   }
 }
 
