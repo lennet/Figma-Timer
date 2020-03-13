@@ -9,8 +9,8 @@ TODO: insert Link to published plugin
 ## Usage
 
 There are two ways to start a timer:
-1. Type the time you want to count down in *Timer: HH:MM:SS* format (e.g. Timer: 5:00), then select Plugins > Timer to start the countdown.
-2. Type the time you want to count down in *HH:MM:SS* format (e.g. 5:00). In this case you need to select the text layer before going to Plusings > Timer to start the countdown.
+1. Type the time you want to count down in **Timer: HH:MM:SS** format (e.g. Timer: 5:00), then select Plugins > Timer to start the countdown.
+2. Type the time you want to count down in **HH:MM:SS** format (e.g. 5:00). In this case you need to select the text layer before going to Plusings > Timer to start the countdown.
 
 Additionally, you can now  start a couple of timers on a page (for whatever reason)! To  do that, selectall text layers that  contain the timer, then select Plugins > Timer to shart the countdown.
 
