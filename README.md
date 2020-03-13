@@ -28,4 +28,4 @@ $ sudo npm install -g typescript
 
 ___
 
-Created by [Viktoriia Leontieva](https://twitter.com/killnicole), [https://twitter.com/berndplontsch](https://twitter.com/killnicole) & [Leonard Thomas](https://twitter.com/_leotho)
+Created by [Viktoriia Leontieva](https://twitter.com/killnicole), [Bernd Plontsch](https://twitter.com/berndplontsch) & [Leonard Thomas](https://twitter.com/_leotho)
