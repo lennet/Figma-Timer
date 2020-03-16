@@ -8,14 +8,14 @@ if (checkForSelectedNodes() == false) {
   }
 }
 
-function checkForSelectedNodes() {
+function checkForSelectedNodes() : boolean {
   const regex = new RegExp("[0-9]{1,2}(:[0-9]{1,2})*");
   const selectedNodes =  figma.currentPage.selection.filter(node => node.type == "TEXT" && regex.test(node.characters));
   selectedNodes.forEach(start);
   return selectedNodes.length > 0;
 }
 
-function checkForNodesThatBeginWithTimer() {
+function checkForNodesThatBeginWithTimer() : boolean {
   const nodes = figma.currentPage.findAll(node => node.type === "TEXT" && node.characters.startsWith("Timer:"));
   nodes.forEach(start);
   return nodes.length > 0;
@@ -30,10 +30,12 @@ function start(node: TextNode) {
   }
   
   var seconds =  getRemainingSeconds(timeString);
-  startTimer(node, seconds, startsWithTimer);
+  var template = getTeamplateFromString(timeString);
+
+  startTimer(node, seconds, template, startsWithTimer);
 }
 
-function getRemainingSeconds(timeString: string) {
+function getRemainingSeconds(timeString: string) : number {
   var seconds = 0;
   var components = timeString.split(":");
   secondsSet.reverse();
@@ -48,7 +50,32 @@ function getRemainingSeconds(timeString: string) {
   return seconds;
 }
 
-function secondsToInterval(seconds: number) {
+/**
+ * Generates a template string from a timeString
+ * e.g. converts 5:00 into 0:00
+ */
+function getTeamplateFromString(timeString: string) : string {
+  var result = "";
+  for (const c of timeString) {
+    if (c == ":") {
+      result += c;
+    } else {
+      result += "0";
+    }
+  }
+  return result;
+}
+
+/** 
+* Creates a new time string that conforms to the templates format
+* e.g. 5:00 (timeString) and 00:00:00 (template) will return 00:05:00
+*/
+function fillUpTimeStringWithTempalte(timeString: string, template: string) : string {
+  const trimmedTemplate = template.substring(0, template.length - timeString.length) 
+  return trimmedTemplate + timeString;
+}
+
+function secondsToInterval(seconds: number) : string {
   var result = "";
   var secondsToGo = seconds;
   secondsSet.forEach( (element) => {
@@ -67,15 +94,13 @@ function secondsToInterval(seconds: number) {
   return result;
 }
 
-
-
-async function startTimer(node: TextNode, seconds: number, startsWithTimer: boolean) {
+async function startTimer(node: TextNode, seconds: number, template: string, startsWithTimer: boolean) {
   await figma.loadFontAsync(node.fontName as FontName);
   activeTimer += 1;
 
   var secondsToGo = seconds;
   while(secondsToGo > 0) {
-    var newText = secondsToInterval(secondsToGo);
+    var newText = fillUpTimeStringWithTempalte(secondsToInterval(secondsToGo), template);
     if (startsWithTimer) {
         newText = "Timer: " + newText;
     }
