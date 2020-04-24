@@ -3,30 +3,41 @@ var activeTimer = 0;
 const secondsSet = [86400, 3600, 60, 1];
 const progressBar = figma.createRectangle();
 var pause = 0;
+var reset = 0;
 var userSetSeconds = 0;
 
-figma.showUI(__html__, { width: 100, height: 50 })
+figma.showUI(__html__, { width: 200, height: 50 })
 
 figma.ui.onmessage = msg => {
  
   if (msg.type === 'start') {
     pause = 0;
+    reset = 0;
     console.log ("start message from UI");
     checkAndStart();
   }
 
   if (msg.type === 'pause') {
     console.log ("pause message from UI");
-
-    if (pause > 0) {
-      pause = 0;
-      console.log ("unpause");
-      checkAndStart();
-    } else {
-      pause = 1;
-    }
+    pause = 1;
   }
 
+  if (msg.type === 'continue') {
+    pause = 0;
+  }
+
+  if (msg.type === 'reset'){
+    reset = 1;
+    pause = 1;
+  }
+
+  if (msg.type === 'helpon'){
+    figma.ui.resize(200,200);
+  }
+
+  if (msg.type === 'helpoff'){
+    figma.ui.resize(200,50);
+  }
   // figma.closePlugin();
 };
 
@@ -178,36 +189,50 @@ async function startTimer(node: TextNode, seconds: number, template: string, sta
   //Jannes is also working in a progress bar feature. To be finished later.
   //createProgressBar();
 
+  var keepItRunning = 1;
   var secondsToGo = seconds;
+  var newText = "not set";
+  console.log("SecondsToGo = " + secondsToGo);
   
-  
+  while(keepItRunning > 0) {
 
+    // checking if reset was clicked by user and if so resetting all timers
+    if (reset == 1){
+        secondsToGo = seconds;
+        newText = fillUpTimeStringWithTempalte(secondsToInterval(secondsToGo), template);
+        newText = "Timer: " + newText;
+        node.characters = newText;
+        console.log ("reset to: " + secondsToGo);
+        keepItRunning = 0;
+    };
 
-  while(secondsToGo > 0) {
-
+    // checking if pause was NOT clicked
     if (pause == 0){
-      var newText = fillUpTimeStringWithTempalte(secondsToInterval(secondsToGo), template);
-      if (startsWithTimer) {
-          newText = "Timer: " + newText;
+      if (secondsToGo > 0)
+      {
+        newText = fillUpTimeStringWithTempalte(secondsToInterval(secondsToGo), template);
+        if (startsWithTimer) {
+            newText = "Timer: " + newText;
+        }
+        node.characters = newText;
+        //runProgressBar(secondsToGo);
+        secondsToGo -= 1;
+      } else if (secondsToGo < 1) {
+        node.characters = "Done";
       }
-      node.characters = newText;
-      await delay(1000);
-      secondsToGo -= 1;
-
-      runProgressBar(secondsToGo);
     } else {
-      secondsToGo = 0;
+      // this is the code that comes when pause was clicked. basically just waiting now.
+      if (node.characters == newText)
+      {
+        console.log ("text is the same") 
+      } else {
+        console.log ("timer text was changed") 
+        //this detects if user changes the string of a timer text box while paused and sends it to ui.html. not sure what to do with this yet
+        //figma.ui.postMessage(42); 
+      }
     }
+    await delay(1000);
   }
-
-  if (pause == 0){
-    node.characters = "Done";
-    activeTimer -= 1;
-  }
-
+  // while loop ends here
   console.log("Timer finsihed / became in-active");
-
-  if (activeTimer <= 0) {
-    figma.closePlugin();
-  }
 }
