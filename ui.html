@@ -1,0 +1,29 @@
+<!-- <h2>Figma Timer</h2> -->
+<!-- <p>Seconds: <input id="seconds" value="5"></p> -->
+<button id="start">Start</button>
+<!-- <button id="pause">Pause</button> -->
+<script>
+
+document.getElementById('start').onclick = () => {
+  const textbox = document.getElementById('seconds');
+  //const count = parseInt(textbox.value, 10);
+  const count = 0; // placeholder variable for changing time from UI
+  var currentButtonState = document.getElementById('start').textContent;
+
+  if (currentButtonState == "Start")
+  {
+    parent.postMessage({ pluginMessage: { type: 'start', count } }, '*');
+    document.getElementById('start').textContent = 'Pause';
+  } else {
+    parent.postMessage({ pluginMessage: { type: 'pause', count } }, '*');
+    document.getElementById('start').textContent = 'Start';
+  }
+}
+
+/**
+document.getElementById('pause').onclick = () => {
+  parent.postMessage({ pluginMessage: { type: 'pause' } }, '*')
+}
+*/
+
+</script>
