@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 const delay = ms => new Promise(res => setTimeout(res, ms));
 var activeTimer = 0;
 const secondsSet = [86400, 3600, 60, 1];
+const progressBar = figma.createRectangle();
 if (checkForSelectedNodes() == false) {
     if (checkForNodesThatBeginWithTimer() == false) {
         throw new Error("Type the time to start Timer");
@@ -90,10 +91,28 @@ function secondsToInterval(seconds) {
     });
     return result;
 }
+function createProgressBar() {
+    const nodes = [];
+    progressBar.x = 150;
+    progressBar.fills = [{ type: 'SOLID', color: { r: 0, g: 0.9, b: 0.0 } }];
+    figma.currentPage.appendChild(progressBar);
+    nodes.push(progressBar);
+}
+function runProgressBar(secondsToGo) {
+    console.log(secondsToGo + " this is secondsToGo");
+    if (secondsToGo > 0) {
+        progressBar.resizeWithoutConstraints(secondsToGo, 50);
+    }
+    else {
+        //this means the timer is done
+    }
+}
 function startTimer(node, seconds, template, startsWithTimer) {
     return __awaiter(this, void 0, void 0, function* () {
         yield figma.loadFontAsync(node.fontName);
         activeTimer += 1;
+        console.log("Timer started / became active");
+        createProgressBar();
         var secondsToGo = seconds;
         while (secondsToGo > 0) {
             var newText = fillUpTimeStringWithTempalte(secondsToInterval(secondsToGo), template);
@@ -103,9 +122,11 @@ function startTimer(node, seconds, template, startsWithTimer) {
             node.characters = newText;
             yield delay(1000);
             secondsToGo -= 1;
+            runProgressBar(secondsToGo);
         }
         node.characters = "Done";
         activeTimer -= 1;
+        console.log("Timer finsihed / became in-active");
         if (activeTimer <= 0) {
             figma.closePlugin();
         }
