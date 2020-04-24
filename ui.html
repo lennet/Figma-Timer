@@ -1,9 +1,30 @@
 <!-- <h2>Figma Timer</h2> -->
 <!-- <p>Seconds: <input id="seconds" value="5"></p> -->
-<button id="start">Start</button>
+<html>
+<style>
+body {
+  font: 10px sans-serif;
+  text-align: center;
+  margin: 10px;
+}
+button {
+  border-radius: 5px;
+  background: white;
+  color: black;
+  border: none;
+  padding: 8px 12px;
+  margin: 0 2px;
+  box-shadow: inset 0 0 0 1px black;
+  outline: none;
+}
+
+</style>
+<button id="start" style="width: 70;">Start</button>
 <button id="reset">Reset</button>
 <button id="help">?</button>
-<small id="helptext" hidden> <br /> <br /> Type the time you want to count down in "Timer: HH:MM:SS" format in any text field (e.g. Timer: 5:00) then press 'start' </small>
+<b id="helptext" hidden> <br /> <br /> Type the time you want to count down in "Timer: HH:MM:SS" format in any text field (e.g. Timer: 5:00) then press 'start' </b>
+
+</html>
 <script>
 
 document.getElementById('start').onclick = () => {
@@ -26,16 +47,12 @@ document.getElementById('start').onclick = () => {
   }
 }
 
-
 document.getElementById('reset').onclick = () => {
   parent.postMessage({ pluginMessage: { type: 'reset' } }, '*')
   document.getElementById('start').textContent = 'Start';
 }
 
 document.getElementById('help').onclick = () => {
-  
-
-
   if (document.getElementById('helptext').hidden == true)
   {
     document.getElementById('helptext').hidden = false;
@@ -48,8 +65,6 @@ document.getElementById('help').onclick = () => {
 
 onmessage = (event) => {
   console.log("got this from the plugin code", event.data.pluginMessage)
-
   // here i want to write some code that happens when user tries to edit timer text fields while paused
 }
-
 </script>

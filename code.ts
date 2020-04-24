@@ -32,7 +32,7 @@ figma.ui.onmessage = msg => {
   }
 
   if (msg.type === 'helpon'){
-    figma.ui.resize(200,200);
+    figma.ui.resize(200,150);
   }
 
   if (msg.type === 'helpoff'){
