@@ -38,6 +38,30 @@ document.getElementById('start').onclick = () => {
   var currentButtonState = document.getElementById('start').textContent;
   var helptextvisible = 0;
 
+
+  switch (currentButtonState) {
+    
+    case 'Start': 
+      parent.postMessage({ pluginMessage: { type: 'start', count } }, '*');
+      document.getElementById('start').textContent = 'Pause';
+      //console.log('start case');
+      break;
+  
+    case 'Pause': 
+      parent.postMessage({ pluginMessage: { type: 'pause', count } }, '*');
+      document.getElementById('start').textContent = 'Continue';
+      break;
+
+    case 'Continue': 
+      parent.postMessage({ pluginMessage: { type: 'continue', count } }, '*');
+      document.getElementById('start').textContent = 'Pause';
+      break;
+
+    default: 
+      //console.log('something went wrong');
+  }
+
+  /**
   if (currentButtonState == "Start")
   {
     parent.postMessage({ pluginMessage: { type: 'start', count } }, '*');
@@ -49,7 +73,11 @@ document.getElementById('start').onclick = () => {
     parent.postMessage({ pluginMessage: { type: 'continue', count } }, '*');
     document.getElementById('start').textContent = 'Pause';
   }
+  */
+
+
 }
+
 
 document.getElementById('reset').onclick = () => {
   parent.postMessage({ pluginMessage: { type: 'reset' } }, '*')
