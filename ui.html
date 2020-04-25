@@ -21,13 +21,14 @@ button {
 button:active {
   background: lightgray;
 }
-
 </style>
+
 <button id="start" style="width: 70;">Start</button>
 <button id="reset">Reset</button>
 <button id="help">?</button>
 <b id="helptext" hidden> <br /> <br /> Type the time you want to count down in "Timer: HH:MM:SS" format in any text field (e.g. Timer: 5:00) then press 'start' </b>
 
+<!-- <br /> <br /> <b id="timers" text-align=left;> </b> -->
 </html>
 <script>
 
@@ -40,11 +41,10 @@ document.getElementById('start').onclick = () => {
 
 
   switch (currentButtonState) {
-    
+
     case 'Start': 
       parent.postMessage({ pluginMessage: { type: 'start', count } }, '*');
       document.getElementById('start').textContent = 'Pause';
-      //console.log('start case');
       break;
   
     case 'Pause': 
@@ -60,22 +60,6 @@ document.getElementById('start').onclick = () => {
     default: 
       //console.log('something went wrong');
   }
-
-  /**
-  if (currentButtonState == "Start")
-  {
-    parent.postMessage({ pluginMessage: { type: 'start', count } }, '*');
-    document.getElementById('start').textContent = 'Pause';
-  } else if (currentButtonState == "Pause") {
-    parent.postMessage({ pluginMessage: { type: 'pause', count } }, '*');
-    document.getElementById('start').textContent = 'Continue';
-  } else if (currentButtonState == "Continue") {
-    parent.postMessage({ pluginMessage: { type: 'continue', count } }, '*');
-    document.getElementById('start').textContent = 'Pause';
-  }
-  */
-
-
 }
 
 
@@ -96,7 +80,33 @@ document.getElementById('help').onclick = () => {
 }
 
 onmessage = (event) => {
-  console.log("got this from the plugin code", event.data.pluginMessage)
-  // here i want to write some code that happens when user tries to edit timer text fields while paused
+
+
+  // I started some code here to show timers also in the UI window. This way the user can see timer, even if they are in a different place on the Figma canvas
+  
+  /**
+  if (event.data.pluginMessage[0] == "start timer")
+  {
+    console.log("starting timer in UI")
+    var timerText = document.createElement('div');
+    
+    timers.appendChild(timerText);
+    timerText.id = event.data.pluginMessage[2];
+    //document.getElementById(event.data.pluginMessage[2]).textContent = "success";
+  }
+
+  if (event.data.pluginMessage[0] == "end timer")
+  {
+    console.log("ending timer in UI")
+    var myElement = document.getElementById(event.data.pluginMessage[2]);
+    myElement.parentNode.removeChild(myElement);
+  }
+
+  if (event.data.pluginMessage[0] == "counting")
+  {
+    //console.log("counting inside UI" + event.data.pluginMessage[1])
+    document.getElementById(event.data.pluginMessage[2]).textContent = event.data.pluginMessage[1];
+  }
+  */
 }
 </script>

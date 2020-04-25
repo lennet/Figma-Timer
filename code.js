@@ -14,7 +14,7 @@ const progressBar = figma.createRectangle();
 var pause = 0;
 var reset = 0;
 var userSetSeconds = 0;
-figma.showUI(__html__, { width: 200, height: 50 });
+figma.showUI(__html__, { width: 220, height: 50 });
 figma.ui.onmessage = msg => {
     if (msg.type === 'start') {
         pause = 0;
@@ -32,10 +32,10 @@ figma.ui.onmessage = msg => {
         pause = 1;
     }
     if (msg.type === 'helpon') {
-        figma.ui.resize(200, 150);
+        figma.ui.resize(220, 150);
     }
     if (msg.type === 'helpoff') {
-        figma.ui.resize(200, 50);
+        figma.ui.resize(220, 50);
     }
 };
 function checkAndStart() {
@@ -125,9 +125,11 @@ function startTimer(node, seconds, template, startsWithTimer) {
         yield figma.loadFontAsync(node.fontName);
         activeTimer += 1;
         console.log("Timer started / became active");
+        var timerID = activeTimer;
         var keepItRunning = 1;
         var secondsToGo = seconds;
         var newText = "not set";
+        figma.ui.postMessage(["start timer", "0:00", timerID]);
         while (keepItRunning > 0) {
             // checking if reset was clicked by user and if so resetting all timers
             if (reset == 1) {
@@ -135,7 +137,7 @@ function startTimer(node, seconds, template, startsWithTimer) {
                 newText = fillUpTimeStringWithTempalte(secondsToInterval(secondsToGo), template);
                 newText = "Timer: " + newText;
                 node.characters = newText;
-                console.log("reset to: " + secondsToGo);
+                //console.log ("reset to: " + secondsToGo);
                 keepItRunning = 0;
             }
             ;
@@ -147,11 +149,13 @@ function startTimer(node, seconds, template, startsWithTimer) {
                         newText = "Timer: " + newText;
                     }
                     node.characters = newText;
+                    figma.ui.postMessage(["counting", newText, timerID]);
                     secondsToGo -= 1;
                 }
                 else if (secondsToGo < 1) {
                     node.characters = "Done";
                 }
+                yield delay(1000);
             }
             else {
                 // this is the code that comes when pause was clicked. basically just waiting now.
@@ -163,10 +167,12 @@ function startTimer(node, seconds, template, startsWithTimer) {
                     //this detects if user changes the string of a timer text box while paused and sends it to ui.html. not sure what to do with this yet
                     //figma.ui.postMessage(42); 
                 }
+                yield delay(1000);
             }
-            yield delay(1000);
         }
         // while loop ends here
         console.log("Timer finished / became in-active");
+        figma.ui.postMessage(["end timer", "0:00", timerID]);
+        activeTimer -= 1;
     });
 }
