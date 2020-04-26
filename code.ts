@@ -37,8 +37,7 @@ figma.ui.onmessage = msg => {
   }
 };
 
-function checkAndStart()
-{
+function checkAndStart() {
   if (checkForSelectedNodes() == false) {
     if (checkForNodesThatBeginWithTimer() == false) {
       throw new Error("Type the time to start Timer");
