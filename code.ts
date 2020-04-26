@@ -1,7 +1,6 @@
 const delay = ms => new Promise(res => setTimeout(res, ms));
 var activeTimer = 0;
 const secondsSet = [86400, 3600, 60, 1];
-const progressBar = figma.createRectangle();
 var pause = 0;
 var reset = 0;
 var userSetSeconds = 0;
