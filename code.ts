@@ -1,39 +1,47 @@
 const delay = ms => new Promise(res => setTimeout(res, ms));
 var activeTimer = 0;
 const secondsSet = [86400, 3600, 60, 1];
-var pause = 0;
-var reset = 0;
+var pause = false;
+var reset = false;
 var userSetSeconds = 0;
 
 figma.showUI(__html__, { width: 220, height: 50 })
 
 figma.ui.onmessage = msg => {
  
-  if (msg.type === 'start') {
-    pause = 0;
-    reset = 0;
-    checkAndStart();
-  }
+  switch(msg.type){
 
-  if (msg.type === 'pause') {
-    pause = 1;
-  }
+    case 'start':
+      pause = false;
+      reset = false;
+      checkAndStart();
+      break;
 
-  if (msg.type === 'continue') {
-    pause = 0;
-  }
+    case 'pause':
+      pause = true;
+      break;
 
-  if (msg.type === 'reset'){
-    reset = 1;
-    pause = 1;
-  }
+    case 'continue':
+      pause = false;
+      break;
 
-  if (msg.type === 'helpon'){
-    figma.ui.resize(220,150);
-  }
+    case 'reset':
+      reset = true;
+      pause = true;
+      break;
 
-  if (msg.type === 'helpoff'){
-    figma.ui.resize(220,50);
+    case 'helpon':
+      figma.ui.resize(220,150);
+      break;
+
+    case 'helpoff':
+      figma.ui.resize(220,50);
+      break;
+
+    default:
+      console.log("no code for msg.type: " + msg.type);
+      break;
+
   }
 };
 
@@ -67,7 +75,7 @@ function start(node: TextNode) {
   }
   
   var seconds =  getRemainingSeconds(timeString);
-  var template = getTeamplateFromString(timeString);
+  var template = getTemplateFromString(timeString);
 
   startTimer(node, seconds, template, startsWithTimer);
 }
@@ -91,7 +99,7 @@ function getRemainingSeconds(timeString: string) : number {
  * Generates a template string from a timeString
  * e.g. converts 5:00 into 0:00
  */
-function getTeamplateFromString(timeString: string) : string {
+function getTemplateFromString(timeString: string) : string {
   var result = "";
   for (const c of timeString) {
     if (c == ":") {
@@ -107,7 +115,7 @@ function getTeamplateFromString(timeString: string) : string {
 * Creates a new time string that conforms to the templates format
 * e.g. 5:00 (timeString) and 00:00:00 (template) will return 00:05:00
 */
-function fillUpTimeStringWithTempalte(timeString: string, template: string) : string {
+function fillUpTimeStringWithTemplate(timeString: string, template: string) : string {
   const trimmedTemplate = template.substring(0, template.length - timeString.length) 
   return trimmedTemplate + timeString;
 }
@@ -138,58 +146,40 @@ async function startTimer(node: TextNode, seconds: number, template: string, sta
   console.log("Timer started / became active");
   
   var timerID = activeTimer;
-  var keepItRunning = 1;
+  var keepItRunning = true;
   var secondsToGo = seconds;
   var newText = "";
-
-  figma.ui.postMessage(["start timer", "0:00", timerID]); 
   
-  while(keepItRunning > 0) {
+  while(keepItRunning) {
 
     // checking if reset was clicked by user and if so resetting all timers
-    if (reset == 1){
+    if (reset){
         secondsToGo = seconds;
-        newText = fillUpTimeStringWithTempalte(secondsToInterval(secondsToGo), template);
+        newText = fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template);
         newText = "Timer: " + newText;
         node.characters = newText;
-        //console.log ("reset to: " + secondsToGo);
-        keepItRunning = 0;
+        keepItRunning = false;
     };
 
     // checking if pause was NOT clicked
-    if (pause == 0){
+    if (!pause){
       if (secondsToGo > 0)
       {
-        newText = fillUpTimeStringWithTempalte(secondsToInterval(secondsToGo), template);
+        newText = fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template);
         if (startsWithTimer) {
             newText = "Timer: " + newText;
         }
         node.characters = newText;
-
-        figma.ui.postMessage(["counting", newText, timerID]); 
-        
         secondsToGo -= 1;
       } else if (secondsToGo < 1) {
         node.characters = "Done";
       }
       await delay(1000);
     } else {
-      // this is the code that comes when pause was clicked. basically just waiting now.
-      if (node.characters == newText)
-      {
-        //console.log ("text is the same") 
-      } else {
-        //console.log ("timer text was changed") 
-        //this detects if user changes the string of a timer text box while paused and sends it to ui.html. not sure what to do with this yet
-        //figma.ui.postMessage(42); 
-      }
       await delay(1000);
     }
-    
   }
-  // while loop ends here
-  console.log("Timer finished / became in-active");
-  figma.ui.postMessage(["end timer", "0:00", timerID]); 
-  activeTimer -= 1;
   
+  console.log("Timer finished / became in-active");
+  activeTimer -= 1;
 }

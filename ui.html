@@ -1,5 +1,3 @@
-<!-- <h2>Figma Timer</h2> -->
-<!-- <p>Seconds: <input id="seconds" value="5"></p> -->
 <html>
 <style>
 body {
@@ -27,14 +25,10 @@ button:active {
 <button id="reset">Reset</button>
 <button id="help">?</button>
 <b id="helptext" hidden> <br /> <br /> Type the time you want to count down in "Timer: HH:MM:SS" format in any text field (e.g. Timer: 5:00) then press 'start' </b>
-
-<!-- <br /> <br /> <b id="timers" text-align=left;> </b> -->
 </html>
 <script>
 
 document.getElementById('start').onclick = () => {
-  const textbox = document.getElementById('seconds');
-  //const count = parseInt(textbox.value, 10);
   const count = 0; // placeholder variable for changing time from UI
   var currentButtonState = document.getElementById('start').textContent;
   var helptextvisible = 0;
@@ -58,7 +52,7 @@ document.getElementById('start').onclick = () => {
       break;
 
     default: 
-      //console.log('something went wrong');
+      console.log('button pressed, but event was not coded for');
   }
 }
 
@@ -77,36 +71,5 @@ document.getElementById('help').onclick = () => {
     document.getElementById('helptext').hidden = true;
     parent.postMessage({ pluginMessage: { type: 'helpoff' } }, '*')
   }
-}
-
-onmessage = (event) => {
-
-
-  // I started some code here to show timers also in the UI window. This way the user can see timer, even if they are in a different place on the Figma canvas
-  
-  /**
-  if (event.data.pluginMessage[0] == "start timer")
-  {
-    console.log("starting timer in UI")
-    var timerText = document.createElement('div');
-    
-    timers.appendChild(timerText);
-    timerText.id = event.data.pluginMessage[2];
-    //document.getElementById(event.data.pluginMessage[2]).textContent = "success";
-  }
-
-  if (event.data.pluginMessage[0] == "end timer")
-  {
-    console.log("ending timer in UI")
-    var myElement = document.getElementById(event.data.pluginMessage[2]);
-    myElement.parentNode.removeChild(myElement);
-  }
-
-  if (event.data.pluginMessage[0] == "counting")
-  {
-    //console.log("counting inside UI" + event.data.pluginMessage[1])
-    document.getElementById(event.data.pluginMessage[2]).textContent = event.data.pluginMessage[1];
-  }
-  */
 }
 </script>
