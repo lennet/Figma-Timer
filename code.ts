@@ -140,7 +140,7 @@ async function startTimer(node: TextNode, seconds: number, template: string, sta
   var timerID = activeTimer;
   var keepItRunning = 1;
   var secondsToGo = seconds;
-  var newText = "not set";
+  var newText = "";
 
   figma.ui.postMessage(["start timer", "0:00", timerID]); 
   
