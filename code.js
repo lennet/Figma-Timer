@@ -138,7 +138,9 @@ function startTimer(node, seconds, template, startsWithTimer) {
             if (reset) {
                 secondsToGo = seconds;
                 newText = fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template);
-                newText = "Timer: " + newText;
+                if (startsWithTimer) {
+                    newText = "Timer: " + newText;
+                }
                 node.characters = newText;
                 keepItRunning = false;
             }
@@ -156,11 +158,8 @@ function startTimer(node, seconds, template, startsWithTimer) {
                 else if (secondsToGo < 1) {
                     node.characters = "Done";
                 }
-                yield delay(1000);
             }
-            else {
-                yield delay(1000);
-            }
+            yield delay(1000);
         }
         console.log("Timer finished / became in-active");
         activeTimer -= 1;

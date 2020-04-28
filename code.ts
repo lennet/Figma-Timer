@@ -156,7 +156,9 @@ async function startTimer(node: TextNode, seconds: number, template: string, sta
     if (reset) {
       secondsToGo = seconds;
       newText = fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template);
-      newText = "Timer: " + newText;
+      if (startsWithTimer) {
+        newText = "Timer: " + newText;
+      }
       node.characters = newText;
       keepItRunning = false;
     };
@@ -173,10 +175,8 @@ async function startTimer(node: TextNode, seconds: number, template: string, sta
       } else if (secondsToGo < 1) {
         node.characters = "Done";
       }
-      await delay(1000);
-    } else {
-      await delay(1000);
     }
+    await delay(1000);
   }
 
   console.log("Timer finished / became in-active");
