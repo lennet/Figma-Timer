@@ -10,9 +10,43 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 const delay = ms => new Promise(res => setTimeout(res, ms));
 var activeTimer = 0;
 const secondsSet = [86400, 3600, 60, 1];
-if (checkForSelectedNodes() == false) {
-    if (checkForNodesThatBeginWithTimer() == false) {
-        throw new Error("Type the time to start Timer");
+var pause = false;
+var reset = false;
+var userSetSeconds = 0;
+figma.showUI(__html__, { width: 220, height: 50 });
+figma.ui.onmessage = msg => {
+    switch (msg.type) {
+        case 'start':
+            pause = false;
+            reset = false;
+            checkAndStart();
+            break;
+        case 'pause':
+            pause = true;
+            break;
+        case 'continue':
+            pause = false;
+            break;
+        case 'reset':
+            reset = true;
+            pause = true;
+            break;
+        case 'helpon':
+            figma.ui.resize(220, 150);
+            break;
+        case 'helpoff':
+            figma.ui.resize(220, 50);
+            break;
+        default:
+            console.log("no code for msg.type: " + msg.type);
+            break;
+    }
+};
+function checkAndStart() {
+    if (checkForSelectedNodes() == false) {
+        if (checkForNodesThatBeginWithTimer() == false) {
+            throw new Error("Type the time to start Timer");
+        }
     }
 }
 function checkForSelectedNodes() {
@@ -34,7 +68,7 @@ function start(node) {
         startsWithTimer = true;
     }
     var seconds = getRemainingSeconds(timeString);
-    var template = getTeamplateFromString(timeString);
+    var template = getTemplateFromString(timeString);
     startTimer(node, seconds, template, startsWithTimer);
 }
 function getRemainingSeconds(timeString) {
@@ -52,7 +86,7 @@ function getRemainingSeconds(timeString) {
  * Generates a template string from a timeString
  * e.g. converts 5:00 into 0:00
  */
-function getTeamplateFromString(timeString) {
+function getTemplateFromString(timeString) {
     var result = "";
     for (const c of timeString) {
         if (c == ":") {
@@ -68,7 +102,7 @@ function getTeamplateFromString(timeString) {
 * Creates a new time string that conforms to the templates format
 * e.g. 5:00 (timeString) and 00:00:00 (template) will return 00:05:00
 */
-function fillUpTimeStringWithTempalte(timeString, template) {
+function fillUpTimeStringWithTemplate(timeString, template) {
     const trimmedTemplate = template.substring(0, template.length - timeString.length);
     return trimmedTemplate + timeString;
 }
@@ -94,20 +128,40 @@ function startTimer(node, seconds, template, startsWithTimer) {
     return __awaiter(this, void 0, void 0, function* () {
         yield figma.loadFontAsync(node.fontName);
         activeTimer += 1;
+        console.log("Timer started / became active");
+        var timerID = activeTimer;
+        var keepItRunning = true;
         var secondsToGo = seconds;
-        while (secondsToGo > 0) {
-            var newText = fillUpTimeStringWithTempalte(secondsToInterval(secondsToGo), template);
-            if (startsWithTimer) {
-                newText = "Timer: " + newText;
+        var newText = "";
+        while (keepItRunning) {
+            // checking if reset was clicked by user and if so resetting all timers
+            if (reset) {
+                secondsToGo = seconds;
+                newText = fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template);
+                if (startsWithTimer) {
+                    newText = "Timer: " + newText;
+                }
+                node.characters = newText;
+                keepItRunning = false;
             }
-            node.characters = newText;
+            ;
+            // checking if pause was NOT clicked
+            if (!pause) {
+                if (secondsToGo > 0) {
+                    newText = fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template);
+                    if (startsWithTimer) {
+                        newText = "Timer: " + newText;
+                    }
+                    node.characters = newText;
+                    secondsToGo -= 1;
+                }
+                else if (secondsToGo < 1) {
+                    node.characters = "Done";
+                }
+            }
             yield delay(1000);
-            secondsToGo -= 1;
         }
-        node.characters = "Done";
+        console.log("Timer finished / became in-active");
         activeTimer -= 1;
-        if (activeTimer <= 0) {
-            figma.closePlugin();
-        }
     });
 }
