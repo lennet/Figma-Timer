@@ -1,5 +1,10 @@
 {
   "compilerOptions": {
-    "target": "es6"
-  }
+    "target": "es6",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node"
+  },
+  "include": ["*"],
+  "exclude": ["node_modules", "*.test.ts"]
 }
