@@ -1,0 +1,79 @@
+<html>
+<style>
+  body {
+    font: 10px sans-serif;
+    text-align: center;
+    margin: 10px;
+  }
+
+  button {
+    border-radius: 5px;
+    background: white;
+    color: black;
+    border: none;
+    padding: 8px 12px;
+    margin: 0 2px;
+    box-shadow: inset 0 0 0 1px black;
+    outline: none;
+  }
+
+  button:active {
+    background: lightgray;
+  }
+</style>
+
+<button id="start" style="width: 70;">Start</button>
+<button id="reset">Reset</button>
+<button id="help">?</button>
+<b id="helptext" hidden> <br /> <br /> 
+  Type the time you want to count down in Timer: HH:MM:SS format (e.g. Timer: 5:00) in any text field, then press 'Start'.
+  You can also use HH:MM:SS format (e.g. 5:00). In this case you need to select the text layer before pressing 'Start'.
+ </b>
+
+</html>
+<script>
+
+  document.getElementById('start').onclick = () => {
+    const count = 0; // placeholder variable for changing time from UI
+    var currentButtonState = document.getElementById('start').textContent;
+    var helptextvisible = 0;
+
+
+    switch (currentButtonState) {
+
+      case 'Start':
+        parent.postMessage({ pluginMessage: { type: 'start', count } }, '*');
+        document.getElementById('start').textContent = 'Pause';
+        break;
+
+      case 'Pause':
+        parent.postMessage({ pluginMessage: { type: 'pause', count } }, '*');
+        document.getElementById('start').textContent = 'Continue';
+        break;
+
+      case 'Continue':
+        parent.postMessage({ pluginMessage: { type: 'continue', count } }, '*');
+        document.getElementById('start').textContent = 'Pause';
+        break;
+
+      default:
+        console.log('button pressed, but event was not coded for');
+    }
+  }
+
+
+  document.getElementById('reset').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'reset' } }, '*')
+    document.getElementById('start').textContent = 'Start';
+  }
+
+  document.getElementById('help').onclick = () => {
+    if (document.getElementById('helptext').hidden == true) {
+      document.getElementById('helptext').hidden = false;
+      parent.postMessage({ pluginMessage: { type: 'helpon' } }, '*')
+    } else {
+      document.getElementById('helptext').hidden = true;
+      parent.postMessage({ pluginMessage: { type: 'helpoff' } }, '*')
+    }
+  }
+</script>
