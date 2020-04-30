@@ -35,7 +35,25 @@
 </html>
 <script>
 
+/**
+var line = document.createElement('hr');
+line.setAttribute()
+line.appendChild(timerText);
+*/
 
+//var canvas = document.getElementById("canvas");
+var canvas = document.createElement("canvas");
+var ctx = canvas.getContext("2d");
+ctx.setLineDash([2, 2]);/*dashes are 5px and spaces are 3px*/
+ctx.beginPath();
+ctx.moveTo(0,20);
+ctx.lineTo(180, 20);
+ctx.lineWidth = 0.5;
+ctx.strokeStyle = 'blue';
+ctx.stroke();
+canvas.setAttribute("width", 200);
+canvas.setAttribute("height", 25);
+timers.appendChild(canvas);
 
   document.getElementById('start').onclick = () => {
     const count = 0; // placeholder variable for changing time from UI
@@ -87,7 +105,6 @@
     // better design
     // UI window size fix
     // Timer id counter bug
-    // Not all elements removed bug
 
     var progressBarWidth = 200;
     var progressBarHeight = 5;
@@ -103,7 +120,6 @@
       var timerText = document.createElement('div');
       timers.appendChild(timerText);
       timerText.id = timerID;
-
 
       var mySVG = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
       var progressBar = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
@@ -122,7 +138,6 @@
       mySVG.setAttribute('width', progressBarWidth);
       mySVG.setAttribute('height', progressBarHeight + 10);
 
-
       mySVG.appendChild(progressBarBack);
       mySVG.appendChild(progressBar);
       timers.appendChild(mySVG);
@@ -137,10 +152,6 @@
 
     if (eventType == "end timer") {
       var myElement = document.getElementById(timerID);
-      //myElement.parentNode.removeChild(myElement);
-
-
-      //myElement = document.getElementById("svg" + timerID);
       myElement.parentNode.innerHTML = "";
     }
   }
