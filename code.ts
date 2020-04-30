@@ -5,6 +5,8 @@ var pause = false;
 var reset = false;
 var userSetSeconds = 0;
 
+console.log("code updated");
+
 figma.showUI(__html__, { width: 220, height: 50 })
 
 figma.ui.onmessage = msg => {
@@ -150,6 +152,8 @@ async function startTimer(node: TextNode, seconds: number, template: string, sta
   var secondsToGo = seconds;
   var newText = "";
 
+  figma.ui.postMessage(["start timer", newText, timerID]); 
+
   while (keepItRunning) {
 
     // checking if reset was clicked by user and if so resetting all timers
@@ -161,6 +165,7 @@ async function startTimer(node: TextNode, seconds: number, template: string, sta
       }
       node.characters = newText;
       keepItRunning = false;
+      figma.ui.postMessage(["end timer", newText, timerID]); 
     };
 
     // checking if pause was NOT clicked
@@ -171,6 +176,7 @@ async function startTimer(node: TextNode, seconds: number, template: string, sta
           newText = "Timer: " + newText;
         }
         node.characters = newText;
+        figma.ui.postMessage(["counting", newText, timerID]); 
         secondsToGo -= 1;
       } else if (secondsToGo < 1) {
         node.characters = "Done";
