@@ -14,7 +14,7 @@ var pause = false;
 var reset = false;
 var userSetSeconds = 0;
 console.log("code updated");
-figma.showUI(__html__, { width: 220, height: 50 });
+figma.showUI(__html__, { width: 220, height: 150 });
 figma.ui.onmessage = msg => {
     switch (msg.type) {
         case 'start':
@@ -134,7 +134,8 @@ function startTimer(node, seconds, template, startsWithTimer) {
         var keepItRunning = true;
         var secondsToGo = seconds;
         var newText = "";
-        figma.ui.postMessage(["start timer", newText, timerID]);
+        figma.ui.postMessage(["start timer", newText, timerID, secondsToGo, seconds]);
+        figma.ui.resize(220, 150);
         while (keepItRunning) {
             // checking if reset was clicked by user and if so resetting all timers
             if (reset) {
@@ -145,7 +146,7 @@ function startTimer(node, seconds, template, startsWithTimer) {
                 }
                 node.characters = newText;
                 keepItRunning = false;
-                figma.ui.postMessage(["end timer", newText, timerID]);
+                figma.ui.postMessage(["end timer", fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template), timerID, secondsToGo, seconds]);
             }
             ;
             // checking if pause was NOT clicked
@@ -156,11 +157,12 @@ function startTimer(node, seconds, template, startsWithTimer) {
                         newText = "Timer: " + newText;
                     }
                     node.characters = newText;
-                    figma.ui.postMessage(["counting", newText, timerID]);
+                    figma.ui.postMessage(["counting", fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template), timerID, secondsToGo, seconds]);
                     secondsToGo -= 1;
                 }
                 else if (secondsToGo < 1) {
                     node.characters = "Done";
+                    figma.ui.postMessage(["counting", "Done", timerID, secondsToGo, seconds]);
                 }
             }
             yield delay(1000);

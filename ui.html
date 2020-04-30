@@ -30,9 +30,12 @@
   'Start'.
   You can also use HH:MM:SS format (e.g. 5:00). In this case you need to select the text layer before pressing 'Start'.
 </b>
+<br /> <br /> <b id="timers" text-align=left;> </b>
 
 </html>
 <script>
+
+
 
   document.getElementById('start').onclick = () => {
     const count = 0; // placeholder variable for changing time from UI
@@ -81,25 +84,64 @@
 
   onmessage = (event) => {
 
-    if (event.data.pluginMessage[0] == "start timer") {
-      console.log("starting timer in UI")
+    // better design
+    // UI window size fix
+    // Timer id counter bug
+    // Not all elements removed bug
+
+    var progressBarWidth = 200;
+    var progressBarHeight = 5;
+
+    var eventType = event.data.pluginMessage[0];
+    var timerText = event.data.pluginMessage[1];
+    var timerID = event.data.pluginMessage[2];
+    var secondsToGo = event.data.pluginMessage[3];
+    var secondsToStart = event.data.pluginMessage[4];
+
+    if (eventType == "start timer") {
+
       var timerText = document.createElement('div');
-
       timers.appendChild(timerText);
-      timerText.id = event.data.pluginMessage[2];
-      //document.getElementById(event.data.pluginMessage[2]).textContent = "success";
+      timerText.id = timerID;
+
+
+      var mySVG = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
+      var progressBar = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+      var progressBarBack = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+      progressBar.id = "progress" + timerID;
+      mySVG.id = "svg" + timerID;
+
+      progressBar.setAttribute("width", progressBarWidth);
+      progressBar.setAttribute("height", progressBarHeight);
+      progressBar.setAttribute("fill", "#009FC2");
+
+      progressBarBack.setAttribute("width", progressBarWidth);
+      progressBarBack.setAttribute("height", progressBarHeight);
+      progressBarBack.setAttribute("fill", "#E4E4E4");
+      
+      mySVG.setAttribute('width', progressBarWidth);
+      mySVG.setAttribute('height', progressBarHeight + 10);
+
+
+      mySVG.appendChild(progressBarBack);
+      mySVG.appendChild(progressBar);
+      timers.appendChild(mySVG);
     }
 
-    if (event.data.pluginMessage[0] == "end timer") {
-      console.log("ending timer in UI")
-      var myElement = document.getElementById(event.data.pluginMessage[2]);
-      myElement.parentNode.removeChild(myElement);
+    if (eventType == "counting") {
+      var progressBar = document.getElementById("progress" + timerID);
+      var newProgressBarWidth = progressBarWidth * secondsToGo / secondsToStart;
+      progressBar.setAttribute("width", newProgressBarWidth);
+      document.getElementById(timerID).textContent = "Timer " + timerID + ": " + timerText;
     }
 
-    if (event.data.pluginMessage[0] == "counting") {
-      //console.log("counting inside UI" + event.data.pluginMessage[1])
-      document.getElementById(event.data.pluginMessage[2]).textContent = event.data.pluginMessage[1];
-    }
+    if (eventType == "end timer") {
+      var myElement = document.getElementById(timerID);
+      //myElement.parentNode.removeChild(myElement);
 
+
+      //myElement = document.getElementById("svg" + timerID);
+      myElement.parentNode.innerHTML = "";
+    }
   }
 </script>

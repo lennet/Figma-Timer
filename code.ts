@@ -7,7 +7,7 @@ var userSetSeconds = 0;
 
 console.log("code updated");
 
-figma.showUI(__html__, { width: 220, height: 50 })
+figma.showUI(__html__, { width: 220, height: 150 })
 
 figma.ui.onmessage = msg => {
 
@@ -152,7 +152,9 @@ async function startTimer(node: TextNode, seconds: number, template: string, sta
   var secondsToGo = seconds;
   var newText = "";
 
-  figma.ui.postMessage(["start timer", newText, timerID]); 
+
+  figma.ui.postMessage(["start timer", newText, timerID, secondsToGo, seconds]); 
+  figma.ui.resize(220, 150);
 
   while (keepItRunning) {
 
@@ -162,10 +164,11 @@ async function startTimer(node: TextNode, seconds: number, template: string, sta
       newText = fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template);
       if (startsWithTimer) {
         newText = "Timer: " + newText;
+
       }
       node.characters = newText;
       keepItRunning = false;
-      figma.ui.postMessage(["end timer", newText, timerID]); 
+      figma.ui.postMessage(["end timer", fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template), timerID, secondsToGo, seconds]); 
     };
 
     // checking if pause was NOT clicked
@@ -176,10 +179,11 @@ async function startTimer(node: TextNode, seconds: number, template: string, sta
           newText = "Timer: " + newText;
         }
         node.characters = newText;
-        figma.ui.postMessage(["counting", newText, timerID]); 
+        figma.ui.postMessage(["counting", fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template), timerID, secondsToGo, seconds]); 
         secondsToGo -= 1;
       } else if (secondsToGo < 1) {
         node.characters = "Done";
+        figma.ui.postMessage(["counting", "Done", timerID, secondsToGo, seconds]); 
       }
     }
     await delay(1000);
