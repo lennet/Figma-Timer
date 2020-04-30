@@ -25,10 +25,11 @@
 <button id="start" style="width: 70;">Start</button>
 <button id="reset">Reset</button>
 <button id="help">?</button>
-<b id="helptext" hidden> <br /> <br /> 
-  Type the time you want to count down in Timer: HH:MM:SS format (e.g. Timer: 5:00) in any text field, then press 'Start'.
+<b id="helptext" hidden> <br /> <br />
+  Type the time you want to count down in Timer: HH:MM:SS format (e.g. Timer: 5:00) in any text field, then press
+  'Start'.
   You can also use HH:MM:SS format (e.g. 5:00). In this case you need to select the text layer before pressing 'Start'.
- </b>
+</b>
 
 </html>
 <script>
@@ -75,5 +76,30 @@
       document.getElementById('helptext').hidden = true;
       parent.postMessage({ pluginMessage: { type: 'helpoff' } }, '*')
     }
+  }
+
+
+  onmessage = (event) => {
+
+    if (event.data.pluginMessage[0] == "start timer") {
+      console.log("starting timer in UI")
+      var timerText = document.createElement('div');
+
+      timers.appendChild(timerText);
+      timerText.id = event.data.pluginMessage[2];
+      //document.getElementById(event.data.pluginMessage[2]).textContent = "success";
+    }
+
+    if (event.data.pluginMessage[0] == "end timer") {
+      console.log("ending timer in UI")
+      var myElement = document.getElementById(event.data.pluginMessage[2]);
+      myElement.parentNode.removeChild(myElement);
+    }
+
+    if (event.data.pluginMessage[0] == "counting") {
+      //console.log("counting inside UI" + event.data.pluginMessage[1])
+      document.getElementById(event.data.pluginMessage[2]).textContent = event.data.pluginMessage[1];
+    }
+
   }
 </script>
