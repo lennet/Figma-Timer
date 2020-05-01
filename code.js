@@ -13,8 +13,10 @@ const secondsSet = [86400, 3600, 60, 1];
 var pause = false;
 var reset = false;
 var userSetSeconds = 0;
+var uiHeight = 60;
+var timerUIHeight = 50;
 console.log("code updated");
-figma.showUI(__html__, { width: 220, height: 250 });
+figma.showUI(__html__, { width: 220, height: uiHeight });
 figma.ui.onmessage = msg => {
     switch (msg.type) {
         case 'start':
@@ -32,13 +34,14 @@ figma.ui.onmessage = msg => {
             reset = true;
             pause = true;
             activeTimer = 0;
+            figma.ui.resize(220, uiHeight);
             //figma.ui.postMessage(["end timer"]);
             break;
         case 'helpon':
             figma.ui.resize(220, 150);
             break;
         case 'helpoff':
-            figma.ui.resize(220, 50);
+            figma.ui.resize(220, uiHeight);
             break;
         default:
             console.log("no code for msg.type: " + msg.type);
@@ -137,7 +140,7 @@ function startTimer(node, seconds, template, startsWithTimer) {
         var secondsToGo = seconds;
         var newText = "";
         figma.ui.postMessage(["start timer", newText, timerID, secondsToGo, seconds]);
-        figma.ui.resize(220, 250);
+        figma.ui.resize(220, 100 + activeTimer * 50);
         while (keepItRunning) {
             // checking if reset was clicked by user and if so resetting all timers
             if (reset) {

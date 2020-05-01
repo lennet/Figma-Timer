@@ -5,9 +5,12 @@ var pause = false;
 var reset = false;
 var userSetSeconds = 0;
 
+var uiHeight = 60;
+var timerUIHeight = 50;
+
 console.log("code updated");
 
-figma.showUI(__html__, { width: 220, height: 250 })
+figma.showUI(__html__, { width: 220, height: uiHeight })
 
 figma.ui.onmessage = msg => {
 
@@ -31,6 +34,7 @@ figma.ui.onmessage = msg => {
       reset = true;
       pause = true;
       activeTimer = 0;
+      figma.ui.resize(220, uiHeight);
       //figma.ui.postMessage(["end timer"]);
       break;
 
@@ -39,7 +43,7 @@ figma.ui.onmessage = msg => {
       break;
 
     case 'helpoff':
-      figma.ui.resize(220, 50);
+      figma.ui.resize(220, uiHeight);
       break;
 
     default:
@@ -156,7 +160,7 @@ async function startTimer(node: TextNode, seconds: number, template: string, sta
 
 
   figma.ui.postMessage(["start timer", newText, timerID, secondsToGo, seconds]);
-  figma.ui.resize(220, 250);
+  figma.ui.resize(220, 100 + activeTimer * 50);
 
   while (keepItRunning) {
 
