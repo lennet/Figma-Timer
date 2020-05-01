@@ -30,30 +30,12 @@
   'Start'.
   You can also use HH:MM:SS format (e.g. 5:00). In this case you need to select the text layer before pressing 'Start'.
 </b>
-<br /> <br /> <b id="timers" text-align=left;> </b>
+<br /> <br /> <b id="timers" text-align=left style="border-bottom: 1px dashed #E6E6E6;";> </b>
 
 </html>
 <script>
 
-/**
-var line = document.createElement('hr');
-line.setAttribute()
-line.appendChild(timerText);
-*/
-
-//var canvas = document.getElementById("canvas");
-var canvas = document.createElement("canvas");
-var ctx = canvas.getContext("2d");
-ctx.setLineDash([2, 2]);/*dashes are 5px and spaces are 3px*/
-ctx.beginPath();
-ctx.moveTo(0,20);
-ctx.lineTo(180, 20);
-ctx.lineWidth = 0.5;
-ctx.strokeStyle = 'blue';
-ctx.stroke();
-canvas.setAttribute("width", 200);
-canvas.setAttribute("height", 25);
-timers.appendChild(canvas);
+  //document.getElementById("timers").style.borderBottom = "1px dashed #E6E6E6";
 
   document.getElementById('start').onclick = () => {
     const count = 0; // placeholder variable for changing time from UI
@@ -64,6 +46,7 @@ timers.appendChild(canvas);
     switch (currentButtonState) {
 
       case 'Start':
+        
         parent.postMessage({ pluginMessage: { type: 'start', count } }, '*');
         document.getElementById('start').textContent = 'Pause';
         break;
@@ -87,6 +70,8 @@ timers.appendChild(canvas);
   document.getElementById('reset').onclick = () => {
     parent.postMessage({ pluginMessage: { type: 'reset' } }, '*')
     document.getElementById('start').textContent = 'Start';
+    var myElement = document.getElementById("timers");
+    myElement.innerHTML = "";
   }
 
   document.getElementById('help').onclick = () => {
@@ -102,12 +87,11 @@ timers.appendChild(canvas);
 
   onmessage = (event) => {
 
-    // better design
     // UI window size fix
-    // Timer id counter bug
 
     var progressBarWidth = 200;
-    var progressBarHeight = 5;
+    var progressBarHeight = 10;
+    var progressBarMargin = 5;
 
     var eventType = event.data.pluginMessage[0];
     var timerText = event.data.pluginMessage[1];
@@ -117,26 +101,42 @@ timers.appendChild(canvas);
 
     if (eventType == "start timer") {
 
+      // create spacing
+      var spacing = document.createElement('div');
+      spacing.lineHeight = 3;
+      spacing.textContent = "---";
+      spacing.style.color = 'white';
+      timers.appendChild(spacing);
+
+      // create a timer text e.g. Timer: 3:34
       var timerText = document.createElement('div');
+      timerText.style.fontSize = 11;
+      
+      timerText.style.color = 'black';
+      timerText.style.textAlign = 'left';
+      timerText.style.fontWeight = 200;
       timers.appendChild(timerText);
       timerText.id = timerID;
 
+      // create a timer progress bar
       var mySVG = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
       var progressBar = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
       var progressBarBack = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
       progressBar.id = "progress" + timerID;
       mySVG.id = "svg" + timerID;
 
+      mySVG.setAttribute('width', progressBarWidth);
+      mySVG.setAttribute('height', progressBarHeight + 20);
+
+      progressBar.setAttribute("y", progressBarMargin);
       progressBar.setAttribute("width", progressBarWidth);
       progressBar.setAttribute("height", progressBarHeight);
       progressBar.setAttribute("fill", "#009FC2");
 
+      progressBarBack.setAttribute("y", progressBarMargin);
       progressBarBack.setAttribute("width", progressBarWidth);
       progressBarBack.setAttribute("height", progressBarHeight);
       progressBarBack.setAttribute("fill", "#E4E4E4");
-      
-      mySVG.setAttribute('width', progressBarWidth);
-      mySVG.setAttribute('height', progressBarHeight + 10);
 
       mySVG.appendChild(progressBarBack);
       mySVG.appendChild(progressBar);
@@ -151,8 +151,8 @@ timers.appendChild(canvas);
     }
 
     if (eventType == "end timer") {
-      var myElement = document.getElementById(timerID);
-      myElement.parentNode.innerHTML = "";
+      //var myElement = document.getElementById(timerID);
+      //myElement.parentNode.innerHTML = "";
     }
   }
 </script>

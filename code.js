@@ -14,7 +14,7 @@ var pause = false;
 var reset = false;
 var userSetSeconds = 0;
 console.log("code updated");
-figma.showUI(__html__, { width: 220, height: 150 });
+figma.showUI(__html__, { width: 220, height: 250 });
 figma.ui.onmessage = msg => {
     switch (msg.type) {
         case 'start':
@@ -31,6 +31,8 @@ figma.ui.onmessage = msg => {
         case 'reset':
             reset = true;
             pause = true;
+            activeTimer = 0;
+            //figma.ui.postMessage(["end timer"]);
             break;
         case 'helpon':
             figma.ui.resize(220, 150);
@@ -135,7 +137,7 @@ function startTimer(node, seconds, template, startsWithTimer) {
         var secondsToGo = seconds;
         var newText = "";
         figma.ui.postMessage(["start timer", newText, timerID, secondsToGo, seconds]);
-        figma.ui.resize(220, 150);
+        figma.ui.resize(220, 250);
         while (keepItRunning) {
             // checking if reset was clicked by user and if so resetting all timers
             if (reset) {
@@ -146,28 +148,32 @@ function startTimer(node, seconds, template, startsWithTimer) {
                 }
                 node.characters = newText;
                 keepItRunning = false;
-                figma.ui.postMessage(["end timer", fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template), timerID, secondsToGo, seconds]);
+                //figma.ui.postMessage(["end timer", fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template), timerID, secondsToGo, seconds]);
             }
             ;
             // checking if pause was NOT clicked
-            if (!pause) {
-                if (secondsToGo > 0) {
-                    newText = fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template);
-                    if (startsWithTimer) {
-                        newText = "Timer: " + newText;
+            if (!reset) {
+                if (!pause) {
+                    if (secondsToGo > 0) {
+                        newText = fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template);
+                        if (startsWithTimer) {
+                            newText = "Timer: " + newText;
+                        }
+                        node.characters = newText;
+                        figma.ui.postMessage(["counting", fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template), timerID, secondsToGo, seconds]);
+                        secondsToGo -= 1;
                     }
-                    node.characters = newText;
-                    figma.ui.postMessage(["counting", fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template), timerID, secondsToGo, seconds]);
-                    secondsToGo -= 1;
+                    else if (secondsToGo < 1) {
+                        node.characters = "Done";
+                        figma.ui.postMessage(["counting", "Done", timerID, secondsToGo, seconds]);
+                    }
                 }
-                else if (secondsToGo < 1) {
-                    node.characters = "Done";
-                    figma.ui.postMessage(["counting", "Done", timerID, secondsToGo, seconds]);
-                }
+                yield delay(1000);
             }
-            yield delay(1000);
         }
         console.log("Timer finished / became in-active");
-        activeTimer -= 1;
+        if (!reset) {
+            activeTimer -= 1;
+        }
     });
 }
