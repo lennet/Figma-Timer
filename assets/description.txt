@@ -1,0 +1,10 @@
+Use text to create a timer on a Figma page.
+
+There are two ways to start a timer:
+
+1. Type the time you want to count down in Timer: HH:MM:SS format (e.g. Timer: 5:00), then press 'Start'.
+2. Type the time you want to count down in HH:MM:SS format (e.g. 5:00). In this case you need to select the text layer before pressing 'Start'
+
+Additionally, you can now start a couple of timers on a page (for whatever reason).
+
+Checkout Timebox ⏱ for a collection of Timers that work great with this Plugin (https://www.figma.com/community/file/824677652393376493)
