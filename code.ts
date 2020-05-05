@@ -1,5 +1,5 @@
 const delay = ms => new Promise(res => setTimeout(res, ms));
-var activeTimer = 0;
+var totalTimers = 0;
 const secondsSet = [86400, 3600, 60, 1];
 var pause = false;
 var reset = false;
@@ -32,7 +32,7 @@ figma.ui.onmessage = msg => {
     case 'reset':
       reset = true;
       pause = true;
-      activeTimer = 0;
+      totalTimers = 0;
       figma.ui.resize(220, uiHeight);
       break;
 
@@ -153,11 +153,11 @@ function secondsToInterval(seconds: number): string {
 
 async function startTimer(node: TextNode, seconds: number, template: string, startsWithTimer: boolean) {
   await figma.loadFontAsync(node.fontName as FontName);
-  activeTimer += 1;
+  totalTimers += 1
 
   console.log("Timer started / became active");
 
-  var timerID = activeTimer;
+  var timerID = totalTimers;
   var keepItRunning = true;
   var secondsToGo = seconds;
   var newText = "";
@@ -165,7 +165,7 @@ async function startTimer(node: TextNode, seconds: number, template: string, sta
   figma.ui.postMessage(["start timer", newText, timerID, secondsToGo, seconds]);
 
   // changing size of UI.html to fit timer progress bars. >4 timers need to scroll to see.
-  var newUIHeight = 100 + activeTimer * 50;
+  var newUIHeight = 100 + totalTimers * 50;
   if (newUIHeight > uiMaxHeight) {
     newUIHeight = uiMaxHeight;
   }
@@ -203,10 +203,6 @@ async function startTimer(node: TextNode, seconds: number, template: string, sta
       }
       await delay(1000);
     }
-  }
-
-  if (!reset) {
-    activeTimer -= 1;
   }
 
   console.log("Timer finished / became in-active");

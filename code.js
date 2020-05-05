@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 const delay = ms => new Promise(res => setTimeout(res, ms));
-var activeTimer = 0;
+var totalTimers = 0;
 const secondsSet = [86400, 3600, 60, 1];
 var pause = false;
 var reset = false;
@@ -33,7 +33,7 @@ figma.ui.onmessage = msg => {
         case 'reset':
             reset = true;
             pause = true;
-            activeTimer = 0;
+            totalTimers = 0;
             figma.ui.resize(220, uiHeight);
             break;
         case 'helpon':
@@ -136,15 +136,15 @@ function secondsToInterval(seconds) {
 function startTimer(node, seconds, template, startsWithTimer) {
     return __awaiter(this, void 0, void 0, function* () {
         yield figma.loadFontAsync(node.fontName);
-        activeTimer += 1;
+        totalTimers += 1;
         console.log("Timer started / became active");
-        var timerID = activeTimer;
+        var timerID = totalTimers;
         var keepItRunning = true;
         var secondsToGo = seconds;
         var newText = "";
         figma.ui.postMessage(["start timer", newText, timerID, secondsToGo, seconds]);
         // changing size of UI.html to fit timer progress bars. >4 timers need to scroll to see.
-        var newUIHeight = 100 + activeTimer * 50;
+        var newUIHeight = 100 + totalTimers * 50;
         if (newUIHeight > uiMaxHeight) {
             newUIHeight = uiMaxHeight;
         }
@@ -181,9 +181,6 @@ function startTimer(node, seconds, template, startsWithTimer) {
                 }
                 yield delay(1000);
             }
-        }
-        if (!reset) {
-            activeTimer -= 1;
         }
         console.log("Timer finished / became in-active");
     });
