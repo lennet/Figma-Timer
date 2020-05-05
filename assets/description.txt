@@ -7,4 +7,4 @@ There are two ways to start a timer:
 
 Additionally, you can now start a couple of timers on a page (for whatever reason).
 
-Checkout Timebox ⏱ for a collection of Timers that work great with this Plugin (https://www.figma.com/community/file/824677652393376493)
+Checkout Timebox ⏱ for a collection of Timers that work great with this plugin: https://www.figma.com/community/file/824677652393376493.
