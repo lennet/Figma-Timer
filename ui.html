@@ -30,12 +30,14 @@
   'Start'.
   You can also use HH:MM:SS format (e.g. 5:00). In this case you need to select the text layer before pressing 'Start'.
 </b>
-<br /> <br /> <b id="timers" text-align=left style="border-bottom: 1px dashed #E6E6E6;";> </b>
+<div id=timers-container hidden>
+  <br />
+  <br />
+  <b id="timers" text-align=left style="border-bottom: 1px dashed #E6E6E6;" ;> </b>
+</div>
 
 </html>
 <script>
-
-  //document.getElementById("timers").style.borderBottom = "1px dashed #E6E6E6";
 
   document.getElementById('start').onclick = () => {
     const count = 0; // placeholder variable for changing time from UI
@@ -46,7 +48,6 @@
     switch (currentButtonState) {
 
       case 'Start':
-        
         parent.postMessage({ pluginMessage: { type: 'start', count } }, '*');
         document.getElementById('start').textContent = 'Pause';
         break;
@@ -70,8 +71,8 @@
   document.getElementById('reset').onclick = () => {
     parent.postMessage({ pluginMessage: { type: 'reset' } }, '*')
     document.getElementById('start').textContent = 'Start';
-    var myElement = document.getElementById("timers");
-    myElement.innerHTML = "";
+    var timersHTMLelement = document.getElementById("timers");
+    timersHTMLelement.innerHTML = "";
   }
 
   document.getElementById('help').onclick = () => {
@@ -85,9 +86,12 @@
   }
 
 
-  onmessage = (event) => {
+  /** 
+  * message events coming from code.ts where the main logic for the timer sits
+  * messages contain timer information by ID, so that we can update UI.html with timer info
+  */
 
-    // UI window size fix
+  onmessage = (event) => {
 
     var progressBarWidth = 200;
     var progressBarHeight = 10;
@@ -101,7 +105,9 @@
 
     if (eventType == "start timer") {
 
-      // create spacing
+      document.getElementById('timers-container').hidden = false;
+
+      // create spacing between timers
       var spacing = document.createElement('div');
       spacing.lineHeight = 3;
       spacing.textContent = "---";
@@ -111,7 +117,7 @@
       // create a timer text e.g. Timer: 3:34
       var timerText = document.createElement('div');
       timerText.style.fontSize = 11;
-      
+
       timerText.style.color = 'black';
       timerText.style.textAlign = 'left';
       timerText.style.fontWeight = 200;
@@ -151,8 +157,7 @@
     }
 
     if (eventType == "end timer") {
-      //var myElement = document.getElementById(timerID);
-      //myElement.parentNode.innerHTML = "";
+      document.getElementById('timers-container').hidden = true;
     }
   }
 </script>

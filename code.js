@@ -15,7 +15,7 @@ var reset = false;
 var userSetSeconds = 0;
 var uiHeight = 60;
 var timerUIHeight = 50;
-console.log("code updated");
+var uiMaxHeight = 300;
 figma.showUI(__html__, { width: 220, height: uiHeight });
 figma.ui.onmessage = msg => {
     switch (msg.type) {
@@ -35,7 +35,6 @@ figma.ui.onmessage = msg => {
             pause = true;
             activeTimer = 0;
             figma.ui.resize(220, uiHeight);
-            //figma.ui.postMessage(["end timer"]);
             break;
         case 'helpon':
             figma.ui.resize(220, 150);
@@ -130,6 +129,10 @@ function secondsToInterval(seconds) {
     });
     return result;
 }
+/**
+* Code that updates all timers on the Figma stage
+* will also send updates / messages to UI.html, so we can show timers there
+*/
 function startTimer(node, seconds, template, startsWithTimer) {
     return __awaiter(this, void 0, void 0, function* () {
         yield figma.loadFontAsync(node.fontName);
@@ -140,7 +143,13 @@ function startTimer(node, seconds, template, startsWithTimer) {
         var secondsToGo = seconds;
         var newText = "";
         figma.ui.postMessage(["start timer", newText, timerID, secondsToGo, seconds]);
-        figma.ui.resize(220, 100 + activeTimer * 50);
+        // changing size of UI.html to fit timer progress bars. >4 timers need to scroll to see.
+        var newUIHeight = 100 + activeTimer * 50;
+        if (newUIHeight > uiMaxHeight) {
+            newUIHeight = uiMaxHeight;
+        }
+        figma.ui.resize(220, newUIHeight);
+        // this loop updates all timers every second
         while (keepItRunning) {
             // checking if reset was clicked by user and if so resetting all timers
             if (reset) {
@@ -151,7 +160,6 @@ function startTimer(node, seconds, template, startsWithTimer) {
                 }
                 node.characters = newText;
                 keepItRunning = false;
-                //figma.ui.postMessage(["end timer", fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template), timerID, secondsToGo, seconds]);
             }
             ;
             // checking if pause was NOT clicked
@@ -159,11 +167,11 @@ function startTimer(node, seconds, template, startsWithTimer) {
                 if (!pause) {
                     if (secondsToGo > 0) {
                         newText = fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template);
+                        figma.ui.postMessage(["counting", newText, timerID, secondsToGo, seconds]);
                         if (startsWithTimer) {
                             newText = "Timer: " + newText;
                         }
                         node.characters = newText;
-                        figma.ui.postMessage(["counting", fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template), timerID, secondsToGo, seconds]);
                         secondsToGo -= 1;
                     }
                     else if (secondsToGo < 1) {
@@ -174,9 +182,9 @@ function startTimer(node, seconds, template, startsWithTimer) {
                 yield delay(1000);
             }
         }
-        console.log("Timer finished / became in-active");
         if (!reset) {
             activeTimer -= 1;
         }
+        console.log("Timer finished / became in-active");
     });
 }
