@@ -31,7 +31,7 @@ figma.ui.onmessage = msg => {
       break;
 
     case 'helpon':
-      figma.ui.resize(220, 180);
+      figma.ui.resize(220, 200);
       break;
 
     case 'helpoff':
