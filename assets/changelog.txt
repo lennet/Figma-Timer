@@ -1,0 +1,5 @@
+Version 3:
+It is now possible to pause and reset timers.
+Thanks to Jannes (🐦@jannespeters) for the contribution!
+
+We are always happy about feedback and suggestions! https://github.com/lennet/Figma-Timer/issues/new/
