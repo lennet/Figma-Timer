@@ -13,10 +13,16 @@ const secondsSet = [86400, 3600, 60, 1];
 var pause = false;
 var reset = false;
 var userSetSeconds = 0;
-var uiHeight = 60;
+var uiWindow = {
+    minHeight: 60,
+    maxHeight: 300,
+    helptextHeight: 200,
+    width: 220,
+};
+//var uiHeight = 60;
 var timerUIHeight = 50;
-var uiMaxHeight = 300;
-figma.showUI(__html__, { width: 220, height: uiHeight });
+//var uiMaxHeight = 300;
+figma.showUI(__html__, { width: uiWindow.width, height: uiWindow.minHeight });
 figma.ui.onmessage = msg => {
     switch (msg.type) {
         case 'start':
@@ -34,13 +40,13 @@ figma.ui.onmessage = msg => {
             reset = true;
             pause = true;
             totalTimers = 0;
-            figma.ui.resize(220, uiHeight);
+            figma.ui.resize(uiWindow.width, uiWindow.minHeight);
             break;
         case 'helpon':
-            figma.ui.resize(220, 200);
+            figma.ui.resize(uiWindow.width, uiWindow.helptextHeight);
             break;
         case 'helpoff':
-            figma.ui.resize(220, uiHeight);
+            figma.ui.resize(uiWindow.width, uiWindow.minHeight);
             break;
         default:
             console.log("no code for msg.type: " + msg.type);
@@ -145,10 +151,10 @@ function startTimer(node, seconds, template, startsWithTimer) {
         figma.ui.postMessage(["start timer", newText, timerID, secondsToGo, seconds]);
         // changing size of UI.html to fit timer progress bars. >4 timers need to scroll to see.
         var newUIHeight = 100 + totalTimers * 50;
-        if (newUIHeight > uiMaxHeight) {
-            newUIHeight = uiMaxHeight;
+        if (newUIHeight > uiWindow.maxHeight) {
+            newUIHeight = uiWindow.maxHeight;
         }
-        figma.ui.resize(220, newUIHeight);
+        figma.ui.resize(uiWindow.width, newUIHeight);
         // this loop updates all timers every second
         while (keepItRunning) {
             // checking if reset was clicked by user and if so resetting all timers
