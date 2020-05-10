@@ -13,15 +13,13 @@ const secondsSet = [86400, 3600, 60, 1];
 var pause = false;
 var reset = false;
 var userSetSeconds = 0;
-var uiWindow = {
+const uiWindow = {
     minHeight: 60,
     maxHeight: 300,
     helptextHeight: 200,
     width: 220,
 };
-//var uiHeight = 60;
 var timerUIHeight = 50;
-//var uiMaxHeight = 300;
 figma.showUI(__html__, { width: uiWindow.width, height: uiWindow.minHeight });
 figma.ui.onmessage = msg => {
     switch (msg.type) {
@@ -148,23 +146,14 @@ function startTimer(node, seconds, template, startsWithTimer) {
         var keepItRunning = true;
         var secondsToGo = seconds;
         var newText = "";
+        adjustUIWindowHeight();
         figma.ui.postMessage(["start timer", newText, timerID, secondsToGo, seconds]);
-        // changing size of UI.html to fit timer progress bars. >4 timers need to scroll to see.
-        var newUIHeight = 100 + totalTimers * 50;
-        if (newUIHeight > uiWindow.maxHeight) {
-            newUIHeight = uiWindow.maxHeight;
-        }
-        figma.ui.resize(uiWindow.width, newUIHeight);
         // this loop updates all timers every second
         while (keepItRunning) {
             // checking if reset was clicked by user and if so resetting all timers
             if (reset) {
-                secondsToGo = seconds;
-                newText = fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template);
-                if (startsWithTimer) {
-                    newText = "Timer: " + newText;
-                }
-                node.characters = newText;
+                newText = fillUpTimeStringWithTemplate(secondsToInterval(seconds), template);
+                updateTimerText(startsWithTimer, newText, node);
                 keepItRunning = false;
             }
             ;
@@ -174,20 +163,42 @@ function startTimer(node, seconds, template, startsWithTimer) {
                     if (secondsToGo > 0) {
                         newText = fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template);
                         figma.ui.postMessage(["counting", newText, timerID, secondsToGo, seconds]);
-                        if (startsWithTimer) {
-                            newText = "Timer: " + newText;
-                        }
-                        node.characters = newText;
+                        //updateTimerText(startsWithTimer, newText, node);
                         secondsToGo -= 1;
                     }
                     else if (secondsToGo < 1) {
-                        node.characters = "Done";
+                        newText = "Done";
+                        //node.characters = "Done";
                         figma.ui.postMessage(["counting", "Done", timerID, secondsToGo, seconds]);
                     }
+                    updateTimerText(startsWithTimer, newText, node);
                 }
                 yield delay(1000);
             }
         }
         console.log("Timer finished / became in-active");
     });
+}
+function updateTimerText(startsWithTimer, newText, node) {
+    if (startsWithTimer) {
+        newText = "Timer: " + newText;
+    }
+    node.characters = newText;
+}
+/**
+function updateTimerText(newText: string, secondsToGo: number, template:string, timerID: number, seconds: number, startsWithTimer: boolean) {
+  newText = fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template);
+  figma.ui.postMessage(["counting", newText, timerID, secondsToGo, seconds]);
+  if (startsWithTimer) {
+    newText = "Timer: " + newText;
+  }
+  node.characters = newText;
+}*/
+// adjusting height of UI windows depending on amount of timers
+function adjustUIWindowHeight() {
+    var newUIHeight = 100 + totalTimers * 50;
+    if (newUIHeight > uiWindow.maxHeight) {
+        newUIHeight = uiWindow.maxHeight;
+    }
+    figma.ui.resize(uiWindow.width, newUIHeight);
 }
