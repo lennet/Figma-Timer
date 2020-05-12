@@ -166,43 +166,41 @@ async function startTimer(node: TextNode, seconds: number, template: string, sta
   var timerID = totalTimers;
   var keepItRunning = true;
   var secondsToGo = seconds;
+  var eventType = "start timer";
   var newText = "";
 
   adjustUIWindowHeight();
-  figma.ui.postMessage(["start timer", newText, timerID, secondsToGo, seconds]);
+  postMessageToUIWindow (eventType, newText, timerID, secondsToGo, seconds);
 
   // this loop updates all timers every second
   while (keepItRunning) {
-
     // checking if reset was clicked by user and if so resetting all timers
     if (reset) {
       newText = fillUpTimeStringWithTemplate(secondsToInterval(seconds), template);
-      //updateTimerText(startsWithTimer, newText, node);
       keepItRunning = false;
-    };
-
-    // checking if pause was NOT clicked
-    if (!reset) {
-      if (!pause) {
-        if (secondsToGo > 0) {
-          newText = fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template);
-          figma.ui.postMessage(["counting", newText, timerID, secondsToGo, seconds]);
-          secondsToGo -= 1;
-        } else if (secondsToGo < 1) {
-          newText = "Done"
-          figma.ui.postMessage(["counting", "Done", timerID, secondsToGo, seconds]);
-        }
-        //updateTimerText(startsWithTimer, newText, node);
-      }
       updateTimerText(startsWithTimer, newText, node);
-      await delay(1000);
+    } else if (!pause) {
+      if (secondsToGo > 0) {
+        newText = fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template);
+        eventType = "counting";
+      } else {
+        newText = "Done"
+        eventType = "timer done";
+      }
+      postMessageToUIWindow(eventType, newText, timerID, secondsToGo, seconds);
+      updateTimerText(startsWithTimer, newText, node);
+      secondsToGo -= 1;
     }
+    await delay(1000);
   }
   console.log("Timer finished / became in-active");
 }
 
-function updateTimerText (startsWithTimer: boolean, newText: string, node: TextNode)
-{
+function postMessageToUIWindow(eventType: string, timerText: string, timerID: number, secondsToGo: number, secondsToStart: number) {
+  figma.ui.postMessage([eventType, timerText, timerID, secondsToGo, secondsToStart]);
+}
+
+function updateTimerText(startsWithTimer: boolean, newText: string, node: TextNode) {
   if (startsWithTimer) {
     newText = "Timer: " + newText;
   }

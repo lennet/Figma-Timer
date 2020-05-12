@@ -18,6 +18,11 @@
     outline: none;
   }
 
+  button:disabled {
+    color: grey;
+    box-shadow: inset 0 0 0 1px grey;
+  }
+
   button:active {
     background: lightgray;
   }
@@ -35,31 +40,28 @@
   <br />
   <br />
   <b id="timers" text-align=left style="border-bottom: 1px dashed #E6E6E6;" ;> </b>
-
+</div>
 
 </html>
 <script>
 
   document.getElementById('start').onclick = () => {
-    const count = 0; // placeholder variable for changing time from UI
     var currentButtonState = document.getElementById('start').textContent;
-    var helptextvisible = 0;
-
 
     switch (currentButtonState) {
 
       case 'Start':
-        parent.postMessage({ pluginMessage: { type: 'start', count } }, '*');
+        parent.postMessage({ pluginMessage: { type: 'start' } }, '*');
         document.getElementById('start').textContent = 'Pause';
         break;
 
       case 'Pause':
-        parent.postMessage({ pluginMessage: { type: 'pause', count } }, '*');
+        parent.postMessage({ pluginMessage: { type: 'pause' } }, '*');
         document.getElementById('start').textContent = 'Continue';
         break;
 
       case 'Continue':
-        parent.postMessage({ pluginMessage: { type: 'continue', count } }, '*');
+        parent.postMessage({ pluginMessage: { type: 'continue' } }, '*');
         document.getElementById('start').textContent = 'Pause';
         break;
 
@@ -86,6 +88,12 @@
     }
   }
 
+  const progressBar = {
+    width: 200,
+    height: 10,
+    margin: 5,
+  };
+
 
   /** 
   * message events coming from code.ts where the main logic for the timer sits
@@ -93,10 +101,6 @@
   */
 
   onmessage = (event) => {
-
-    var progressBarWidth = 200;
-    var progressBarHeight = 10;
-    var progressBarMargin = 5;
 
     var eventType = event.data.pluginMessage[0];
     var timerText = event.data.pluginMessage[1];
@@ -108,61 +112,68 @@
     switch (eventType) {
       case 'start timer':
         document.getElementById('timers-container').hidden = false;
-
-        // create spacing between timers
-        var spacing = document.createElement('div');
-        spacing.lineHeight = 3;
-        spacing.textContent = "---";
-        spacing.style.color = 'white';
-        timers.appendChild(spacing);
-
-        // create a timer text e.g. Timer: 3:34
-        var timerText = document.createElement('div');
-        timerText.style.fontSize = 11;
-
-        timerText.style.color = 'black';
-        timerText.style.textAlign = 'left';
-        timerText.style.fontWeight = 200;
-        timers.appendChild(timerText);
-        timerText.id = timerID;
-
-        // create a timer progress bar
-        var mySVG = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
-        var progressBar = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
-        var progressBarBack = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
-        progressBar.id = "progress" + timerID;
-        mySVG.id = "svg" + timerID;
-
-        mySVG.setAttribute('width', progressBarWidth);
-        mySVG.setAttribute('height', progressBarHeight + 20);
-
-        progressBar.setAttribute("y", progressBarMargin);
-        progressBar.setAttribute("width", progressBarWidth);
-        progressBar.setAttribute("height", progressBarHeight);
-        progressBar.setAttribute("fill", "#009FC2");
-
-        progressBarBack.setAttribute("y", progressBarMargin);
-        progressBarBack.setAttribute("width", progressBarWidth);
-        progressBarBack.setAttribute("height", progressBarHeight);
-        progressBarBack.setAttribute("fill", "#E4E4E4");
-
-        mySVG.appendChild(progressBarBack);
-        mySVG.appendChild(progressBar);
-        timers.appendChild(mySVG);
+        createTimerUIElements(timerID);
         break;
 
       case 'counting':
-      var progressBar = document.getElementById("progress" + timerID);
-      var newProgressBarWidth = progressBarWidth * secondsToGo / secondsToStart;
-      progressBar.setAttribute("width", newProgressBarWidth);
-      document.getElementById(timerID).textContent = "Timer " + timerID + ": " + timerText;
+        var newProgressBarWidth = progressBar.width * secondsToGo / secondsToStart;
+        updateTimer(timerID, timerText, newProgressBarWidth);
         break;
 
-      case 'end timer':
-      document.getElementById('timers-container').hidden = true;
+      case 'timer done':
+        updateTimer(timerID, timerText, 0);
         break;
-
     }
 
   }
+
+  function createTimerUIElements(timerID) {
+    // create spacing between timers
+    var spacing = document.createElement('div');
+    spacing.lineHeight = 3;
+    spacing.textContent = "---";
+    spacing.style.color = 'white';
+    timers.appendChild(spacing);
+
+    // create a timer text e.g. Timer: 3:34
+    var timerTextElement = document.createElement('div');
+    timerTextElement.style.fontSize = 11;
+
+    timerTextElement.style.color = 'black';
+    timerTextElement.style.textAlign = 'left';
+    timerTextElement.style.fontWeight = 200;
+    timers.appendChild(timerTextElement);
+    timerTextElement.id = timerID;
+
+    // create a timer progress bar
+    var mySVG = document.createElementNS("http://www.w3.org/2000/svg", 'svg');
+    var progressBarFront = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+    var progressBarBack = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+    progressBarFront.id = "progress" + timerID;
+    mySVG.id = "svg" + timerID;
+
+    mySVG.setAttribute('width', progressBar.width);
+    mySVG.setAttribute('height', progressBar.height + 20);
+
+    progressBarFront.setAttribute("y", progressBar.margin);
+    progressBarFront.setAttribute("width", progressBar.width);
+    progressBarFront.setAttribute("height", progressBar.height);
+    progressBarFront.setAttribute("fill", "#009FC2");
+
+    progressBarBack.setAttribute("y", progressBar.margin);
+    progressBarBack.setAttribute("width", progressBar.width);
+    progressBarBack.setAttribute("height", progressBar.height);
+    progressBarBack.setAttribute("fill", "#E4E4E4");
+
+    mySVG.appendChild(progressBarBack);
+    mySVG.appendChild(progressBarFront);
+    timers.appendChild(mySVG);
+  }
+
+  function updateTimer(timerID, timerText, newWidth) {
+    var progressBarUpdate = document.getElementById("progress" + timerID);
+    progressBarUpdate.setAttribute("width", newWidth);
+    document.getElementById(timerID).textContent = "Timer " + timerID + ": " + timerText;
+  }
+
 </script>
