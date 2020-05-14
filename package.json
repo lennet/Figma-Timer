@@ -12,8 +12,8 @@
     "lint:fix": "npm run lint:ts:fix && npm run lint:css:fix",
     "lint:ts": "eslint . --ext .ts,.js",
     "lint:ts:fix": "eslint . --ext .ts,.js",
-    "lint:css": "stylelint 'src/**/*.css'",
-    "lint:css:fix": "stylelint 'src/**/*.css' --fix",
+    "lint:css": "stylelint 'src/**/*'",
+    "lint:css:fix": "stylelint 'src/**/*' --fix",
     "test:base": "jest --passWithNoTests",
     "test:precheck": "test -d dist || npm run build",
     "pretest": "npm run test:precheck",
@@ -80,7 +80,7 @@
       "eslint --fix",
       "git add"
     ],
-    "src/**/*.css": [
+    "src/**/*": [
       "stylelint --fix",
       "git add"
     ],
