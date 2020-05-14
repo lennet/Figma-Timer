@@ -1,9 +1,9 @@
-import fs from 'fs';
+import fs from "fs";
 
-import manifest from '../../manifest.json';
+import manifest from "../../manifest.json";
 
-describe('build script', () => {
-  it('should create the plugin.js and ui.html files in the dist folder', async () => {
+describe("build script", () => {
+  it("should create the plugin.js and ui.html files in the dist folder", async () => {
     const pluginFilePath = manifest.main;
     const uiFilePath = manifest.ui;
 
