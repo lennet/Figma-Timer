@@ -1,4 +1,6 @@
-const delay = ms => new Promise(res => setTimeout(res, ms));
+import { UIActionTypes, UIAction, WorkerActionTypes, WorkerAction } from '../types';
+
+const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 var totalTimers = 0;
 const secondsSet = [86400, 3600, 60, 1];
 var pause = false;
@@ -66,18 +68,18 @@ function checkAndStart() {
 
 function checkForSelectedNodes(): boolean {
   const regex = new RegExp("[0-9]{1,2}(:[0-9]{1,2})*");
-  const selectedNodes = figma.currentPage.selection.filter(node => node.type == "TEXT" && regex.test(node.characters));
+  const selectedNodes = figma.currentPage.selection.filter(node => node.type == "TEXT" && regex.test(node.characters)).map(node => node as TextNode);
   selectedNodes.forEach(start);
   return selectedNodes.length > 0;
 }
 
 function checkForNodesThatBeginWithTimer(): boolean {
-  const nodes = figma.currentPage.findAll(node => node.type === "TEXT" && node.characters.startsWith("Timer:"));
+  const nodes = figma.currentPage.findAll(node => node.type === "TEXT" && node.characters.startsWith("Timer:")).map(node => node as TextNode);
   nodes.forEach(start);
   return nodes.length > 0;
 }
 
-function start(node: TextNode) {
+function start(node: TextNode): void {
   var timeString = node.characters;
   var startsWithTimer = false;
   if (timeString.startsWith("Timer:")) {
@@ -170,7 +172,7 @@ async function startTimer(node: TextNode, seconds: number, template: string, sta
   var newText = "";
 
   adjustUIWindowHeight();
-  postMessageToUIWindow (eventType, newText, timerID, secondsToGo, seconds);
+  postMessageToUIWindow(eventType, newText, timerID, secondsToGo, seconds);
 
   // this loop updates all timers every second
   while (keepItRunning) {
@@ -196,11 +198,11 @@ async function startTimer(node: TextNode, seconds: number, template: string, sta
   console.log("Timer finished / became in-active");
 }
 
-function postMessageToUIWindow(eventType: string, timerText: string, timerID: number, secondsToGo: number, secondsToStart: number) {
+function postMessageToUIWindow(eventType: string, timerText: string, timerID: number, secondsToGo: number, secondsToStart: number): void {
   figma.ui.postMessage([eventType, timerText, timerID, secondsToGo, secondsToStart]);
 }
 
-function updateTimerText(startsWithTimer: boolean, newText: string, node: TextNode) {
+function updateTimerText(startsWithTimer: boolean, newText: string, node: TextNode): void {
   if (startsWithTimer) {
     newText = "Timer: " + newText;
   }
@@ -208,7 +210,7 @@ function updateTimerText(startsWithTimer: boolean, newText: string, node: TextNo
 }
 
 // adjusting height of UI windows depending on amount of timers
-function adjustUIWindowHeight() {
+function adjustUIWindowHeight(): void {
   var newUIHeight = 100 + totalTimers * 50;
   if (newUIHeight > uiWindow.maxHeight) {
     newUIHeight = uiWindow.maxHeight;
