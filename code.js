@@ -8,12 +8,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 const delay = ms => new Promise(res => setTimeout(res, ms));
-var activeTimer = 0;
+var totalTimers = 0;
 const secondsSet = [86400, 3600, 60, 1];
 var pause = false;
 var reset = false;
 var userSetSeconds = 0;
-figma.showUI(__html__, { width: 220, height: 50 });
+const uiWindow = {
+    minHeight: 60,
+    maxHeight: 300,
+    helptextHeight: 200,
+    width: 220,
+};
+var timerUIHeight = 50;
+figma.showUI(__html__, { width: uiWindow.width, height: uiWindow.minHeight });
 figma.ui.onmessage = msg => {
     switch (msg.type) {
         case 'start':
@@ -30,12 +37,14 @@ figma.ui.onmessage = msg => {
         case 'reset':
             reset = true;
             pause = true;
+            totalTimers = 0;
+            figma.ui.resize(uiWindow.width, uiWindow.minHeight);
             break;
         case 'helpon':
-            figma.ui.resize(220, 200);
+            figma.ui.resize(uiWindow.width, uiWindow.helptextHeight);
             break;
         case 'helpoff':
-            figma.ui.resize(220, 50);
+            figma.ui.resize(uiWindow.width, uiWindow.minHeight);
             break;
         default:
             console.log("no code for msg.type: " + msg.type);
@@ -124,44 +133,62 @@ function secondsToInterval(seconds) {
     });
     return result;
 }
+/**
+* Code that updates all timers on the Figma stage
+* will also send updates / messages to UI.html, so we can show timers there
+*/
 function startTimer(node, seconds, template, startsWithTimer) {
     return __awaiter(this, void 0, void 0, function* () {
         yield figma.loadFontAsync(node.fontName);
-        activeTimer += 1;
+        totalTimers += 1;
         console.log("Timer started / became active");
-        var timerID = activeTimer;
+        var timerID = totalTimers;
         var keepItRunning = true;
         var secondsToGo = seconds;
+        var eventType = "start timer";
         var newText = "";
+        adjustUIWindowHeight();
+        postMessageToUIWindow(eventType, newText, timerID, secondsToGo, seconds);
+        // this loop updates all timers every second
         while (keepItRunning) {
             // checking if reset was clicked by user and if so resetting all timers
             if (reset) {
-                secondsToGo = seconds;
-                newText = fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template);
-                if (startsWithTimer) {
-                    newText = "Timer: " + newText;
-                }
-                node.characters = newText;
+                newText = fillUpTimeStringWithTemplate(secondsToInterval(seconds), template);
                 keepItRunning = false;
+                updateTimerText(startsWithTimer, newText, node);
             }
-            ;
-            // checking if pause was NOT clicked
-            if (!pause) {
+            else if (!pause) {
                 if (secondsToGo > 0) {
                     newText = fillUpTimeStringWithTemplate(secondsToInterval(secondsToGo), template);
-                    if (startsWithTimer) {
-                        newText = "Timer: " + newText;
-                    }
-                    node.characters = newText;
-                    secondsToGo -= 1;
+                    eventType = "counting";
                 }
-                else if (secondsToGo < 1) {
-                    node.characters = "Done";
+                else {
+                    newText = "Done";
+                    eventType = "timer done";
                 }
+                postMessageToUIWindow(eventType, newText, timerID, secondsToGo, seconds);
+                updateTimerText(startsWithTimer, newText, node);
+                secondsToGo -= 1;
             }
             yield delay(1000);
         }
         console.log("Timer finished / became in-active");
-        activeTimer -= 1;
     });
+}
+function postMessageToUIWindow(eventType, timerText, timerID, secondsToGo, secondsToStart) {
+    figma.ui.postMessage([eventType, timerText, timerID, secondsToGo, secondsToStart]);
+}
+function updateTimerText(startsWithTimer, newText, node) {
+    if (startsWithTimer) {
+        newText = "Timer: " + newText;
+    }
+    node.characters = newText;
+}
+// adjusting height of UI windows depending on amount of timers
+function adjustUIWindowHeight() {
+    var newUIHeight = 100 + totalTimers * 50;
+    if (newUIHeight > uiWindow.maxHeight) {
+        newUIHeight = uiWindow.maxHeight;
+    }
+    figma.ui.resize(uiWindow.width, newUIHeight);
 }
