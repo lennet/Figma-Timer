@@ -14,6 +14,10 @@ const uiWindow = {
 
 var timerUIHeight = 50;
 
+if (figma.command === 'timer') {
+	figma.showUI(__html__, { width: uiWindow.width, height: uiWindow.minHeight })
+}
+
 figma.showUI(__html__, { width: uiWindow.width, height: uiWindow.minHeight })
 
 figma.ui.onmessage = msg => {
@@ -89,6 +93,9 @@ function start(node: TextNode) {
   var template = getTemplateFromString(timeString);
 
   startTimer(node, seconds, template, startsWithTimer);
+
+  //set plugin relaunch data for easy launching/installing of plugin
+  node.setRelaunchData({ timer: '' });
 
 }
 

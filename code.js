@@ -20,6 +20,9 @@ const uiWindow = {
     width: 220,
 };
 var timerUIHeight = 50;
+if (figma.command === 'timer') {
+    figma.showUI(__html__, { width: uiWindow.width, height: uiWindow.minHeight });
+}
 figma.showUI(__html__, { width: uiWindow.width, height: uiWindow.minHeight });
 figma.ui.onmessage = msg => {
     switch (msg.type) {
@@ -79,6 +82,8 @@ function start(node) {
     var seconds = getRemainingSeconds(timeString);
     var template = getTemplateFromString(timeString);
     startTimer(node, seconds, template, startsWithTimer);
+    //set plugin relaunch data for easy launching/installing of plugin
+    node.setRelaunchData({ timer: '' });
 }
 function getRemainingSeconds(timeString) {
     var seconds = 0;

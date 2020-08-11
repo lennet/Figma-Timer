@@ -3,5 +3,8 @@
   "id": "820311256083321341",
   "api": "1.0.0",
   "main": "code.js",
-  "ui": "ui.html"
+  "ui": "ui.html",
+  "relaunchButtons": [
+		{"command": "timer", "name": "timer",  "multipleSelection": true}
+	]
 }
