@@ -5,6 +5,6 @@
   "main": "code.js",
   "ui": "ui.html",
   "relaunchButtons": [
-		{"command": "timer", "name": "timer",  "multipleSelection": true}
+		{"command": "timer", "name": "Figma Timer",  "multipleSelection": true}
 	]
 }
